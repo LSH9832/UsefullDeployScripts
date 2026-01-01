@@ -1,0 +1,70 @@
+#! /usr/bin/python3
+import os
+import os.path as osp
+import argparse
+
+
+def get_args():
+    parser = argparse.ArgumentParser("add startup service")
+
+    parser.add_argument("-n", "--name", type=str, default=None)
+    parser.add_argument("-c", "--command", required=True)
+    parser.add_argument("--comment", type=str, default=None)
+    parser.add_argument("--network", action="store_true", help="rely on network")
+    parser.add_argument("--no-start", action="store_true", help="do not add to startup service, just create service file")
+
+    return parser.parse_args()
+
+
+def create_service_file(args):
+    if args.name is None:
+        for c in args.command.split():
+            if osp.isfile(c):
+                args.name = osp.basename(c).split(".bash")[0].split(".sh")[0].split(".py")[0]
+                break
+        if args.name is None:
+            print("please enter a name for this service!")
+            exit(-1)
+    if args.comment is None:
+        args.comment = args.name
+    
+    net_config = """Requires=network-online.target
+After=network-online.target
+""" if args.network else "\n"
+
+    content = f"""[Unit]
+Description={args.comment}
+{net_config}
+[Service]
+Type=forking
+ExecStart={args.command}
+
+[Install]
+WantedBy=multi-user.target"""
+    file_name = args.name + ".service"
+    with open(file_name, "w") as f:
+        f.write(content)
+
+    if osp.isfile(file_name):
+        print(f"create {file_name}")
+    return file_name, content
+
+
+def add2startService(filename: str):
+    os.system(f"sudo cp {filename} /lib/systemd/system/")
+    service_file = osp.join("/lib/systemd/system/", filename)
+    if osp.isfile(service_file):
+        for command in [f"sudo chmod +x {service_file}", "sudo systemctl daemon-reload", f"sudo systemctl enable {filename}"]:
+            print("exec: ", command)
+            os.system(command)
+        print("use 'systemctl status " + filename[:-8] + "' to check service status")
+
+    else:
+        print("failed to create service file in /lib/systemd/system, please run this script by using root user")
+
+
+if __name__ == "__main__":
+    args = get_args()
+    f, c = create_service_file(args)
+    if not args.no_start:
+        add2startService(f)
