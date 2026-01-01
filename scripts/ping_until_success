@@ -1,0 +1,26 @@
+#!/bin/bash
+ping_until_success() {
+    local ip=$1
+    local timeout=1  # ping timeout
+    local interval=1 # ping interval
+
+    while true; do
+        echo "Ping $ip"
+        if ping -c 1 -W $timeout $ip &> /dev/null; then
+            echo "Ping to $ip successful!"
+            break
+        else
+            echo "Ping to $ip failed. Retrying in $interval seconds..."
+            sleep $interval
+        fi
+    done
+}
+
+# check whether run bash directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    if [ -z "$1" ]; then
+        echo "Usage: $0 <IP_ADDRESS>"
+        exit 1
+    fi
+    ping_until_success "$1"
+fi
