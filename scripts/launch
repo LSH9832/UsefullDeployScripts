@@ -63,8 +63,12 @@ def parse_command(cfg: dict, log_enabled=True, config=None, no_show=False, no_de
     command = (f"cd {cfg['work_dir']} && " if "work_dir" in cfg and not no_cd else "") + f"{cfg['command']}"
     
     if "posArgs" in cfg.keys() and cfg["posArgs"] is not None:
-        for k, v in cfg["posArgs"].items():
-            command += f" {v}"
+        if isinstance(cfg["posArgs"], dict):
+            for k, v in cfg["posArgs"].items():
+                command += f" {v}"
+        elif isinstance(cfg["posArgs"], list):
+            for arg in cfg["posArgs"]:
+                command += f" {arg}"
 
     if "optArgs" in cfg.keys() and cfg["optArgs"] is not None:
         for param in cfg["optArgs"]:
