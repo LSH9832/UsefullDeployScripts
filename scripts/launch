@@ -7,7 +7,11 @@ import time
 import datetime
 import argparse
 import yaml
-import argcomplete
+try:
+    import argcomplete
+    __argcomplete = True
+except:
+    __argcomplete = False
 from glob import glob
 
 try:
@@ -44,7 +48,8 @@ def get_launch_args(parser=None, set_choices=True):
     parser.add_argument("--no-debug", action="store_true")
     parser.add_argument("-c", "--config", type=str, default=None, help="replace config file")
     if isRootParser:
-        argcomplete.autocomplete(parser)
+        if __argcomplete:
+            argcomplete.autocomplete(parser)
         return parser.parse_args()
 
 
