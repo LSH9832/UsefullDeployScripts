@@ -1,0 +1,45 @@
+#! /bin/bash
+if ! command -v screen &> /dev/null; then
+    echo "screen not installed, installing..."
+    sudo apt install -y screen
+    if [ $? -eq 0 ]; then
+        echo "screen installed"
+    else
+        echo "failed to install screen, please check permission and network"
+        exit 1
+    fi
+# else
+#     echo "screen is already installed"
+fi
+
+# check
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <screen_name> <command...>"
+    exit 1
+fi
+
+screen_name="$1"
+command="${@:2}"
+
+screen -wipe | grep -q ".${screen_name}"
+if ! screen -ls | grep -q ".${screen_name}"; then
+    echo "Session '$screen_name' not found. Creating new session..."
+    screen -dmS "$screen_name" bash
+    echo "Session '$screen_name' created."
+else
+    echo "Session '$screen_name' already exists."
+    screen -x -S $screen_name -X stuff "^C\n"
+    sleep 0.1
+    screen -x -S $screen_name -X stuff "^C\n"
+    sleep 0.1
+    screen -x -S $screen_name -X stuff "^C\n"
+    sleep 0.1
+    screen -x -S $screen_name -X stuff "^C\n"
+    sleep 0.1
+    screen -x -S $screen_name -X stuff "^C\n"
+    sleep 0.1
+    screen -x -S $screen_name -X stuff "^C\n"
+fi
+
+printf "exec '\\033[32m%s\\033[0m' in session '%s'\n" "$command" "$screen_name"
+screen -x -S $screen_name -X stuff "$command\n"
