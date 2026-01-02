@@ -40,3 +40,4 @@ another_exec_node:
   command: rviz -d /path/to/config.rviz
   run_once: true
 ```
+需要注意的是，同一个yaml文件中配置多个启动程序时，所有程序的控制台输出将同时输出，可能会在终端上看起来比较乱
