@@ -1,6 +1,6 @@
 # add_startup_service：添加开机启动服务
 
-add_startup_service是一个基于python3的脚本，可以方便地添加开机启动服务，其用法为
+add_startup_service是一个基于python3的脚本，可以方便地添加开机启动服务，需要在root权限账户下运行，其用法为
 
 ```bash
 ./add_startup_service --name service_name \ # 服务名称，用于生成.service文件
