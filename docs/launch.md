@@ -35,4 +35,8 @@ one_exec_node:   # 第一个程序名称，可随意命名，不要与文件中�
     --config-file: /path/to/your/config.ini
     --debug: false
     # --add-log: "/path/to/log/file.log"   # 仅示意，移到上方填写
+
+another_exec_node:
+  command: rviz -d /path/to/config.rviz
+  run_once: true
 ```
